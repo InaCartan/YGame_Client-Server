@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yatzy</title>
+    <link rel="stylesheet" href="Yatzy.css">
+    <script src="YatzyGui.mjs" defer></script>
+</head>
+<body>
+    <div class="top-grid-container">
+        <div class="Fields">
+            <label for="field-1"></label>
+            <input type="text" id="field-1" readonly>
+                
+            <label for="field-2"></label>
+            <input type="text" id="field-2" readonly>
+
+            <label for="field-3"></label>
+            <input type="text" id="field-3" readonly>
+        
+            <label for="field-4"></label>
+            <input type="text" id="field-4" readonly>
+        
+            <label for="field-5"></label>
+            <input type="text" id="field-5" readonly>
+        </div>
+
+        <div class="Turns">
+            <label class="bold">Turn: 1</label>
+        </div>
+
+        <div class="Button">
+            <button class="button" type="button">
+                Roll
+            </button>
+        </div>
+    </div>
+
+    <div class="grid-container">
+        <div class="left-column">
+            <div class="score-numbers">
+                <label for="ones">1-s</label><input type="text" id="ones" readonly>
+                <label for="twos">2-s</label><input type="text" id="twos" readonly>
+                <label for="threes">3-s</label><input type="text" id="threes" readonly>
+                <label for="fours">4-s</label><input type="text" id="fours" readonly>
+                <label for="fives">5-s</label><input type="text" id="fives" readonly>
+                <label for="sixes">6-s</label><input type="text" id="sixes" readonly>
+            </div>
+            
+            <div class="score-big">
+                <label for="one-pair">One pair</label><input type="text" id="one-pair" readonly>
+                <label for="two-pair">Two pair</label><input type="text" id="two-pair" readonly>
+                <label for="three-same">Three same</label><input type="text" id="three-same" readonly>
+                <label for="four-same">Four same</label><input type="text" id="four-same" readonly>
+                <label for="full-house">Full house</label><input type="text" id="full-house" readonly>
+                <label for="small-straight">Small straight</label><input type="text" id="small-straight" readonly>
+                <label for="large-straight">Large straight</label><input type="text" id="large-straight" readonly>
+                <label for="chance">Chance</label><input type="text" id="chance" readonly>
+                <label for="yatzy">Yatzy</label><input type="text" id="yatzy" readonly>
+            </div>
+        </div>
+        
+        <div class="right-column">
+            <div class="sum-bonus">
+                <div class="sum">
+                    <label for="sum" class="bold">Sum</label><input type="text" id="sum" readonly>
+                </div>
+                <div class="bonus">
+                    <label for="bonus" class="bold">Bonus</label><input type="text" id="bonus" readonly>
+                </div>
+            </div>
+            <div class="total">
+                <label for="total" class="bold">Total</label><input type="text" id="total" readonly>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
