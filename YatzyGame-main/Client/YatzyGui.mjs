@@ -2,6 +2,29 @@ const rollButton = document.querySelector('button');
 const fields = document.querySelectorAll('.Fields input');
 
 const ones = document.getElementById('ones');
+const twos = document.getElementById('twos')
+const three = document.getElementById('threes')
+const fours = document.getElementById('fours');
+const fives = document.getElementById('fives');
+const sixes = document.getElementById('sixes');
+
+const onePair = document.getElementById('one-pair');
+const twoPair = document.getElementById('two-pair');
+const threeSame = document.getElementById('three-same');
+const fourSame = document.getElementById('four-same');
+
+const fullHouse = document.getElementById('full-house');
+const smallStraight = document.getElementById('small-straight');
+const largeStraight = document.getElementById('large-straight');
+
+const chance = document.getElementById('chance');
+const yatzy = document.getElementById('yatzy');
+
+const sumField = document.getElementById('sum');
+const bonusField = document.getElementById('bonus');
+const total = document.getElementById('total');
+
+
 
 let path = 'http://localhost:8000'
 
@@ -61,7 +84,16 @@ rollButton.addEventListener('click', throwD);
 async function getResults(){
     let results = await get(path + '/getResults')
     ones.value = results.ones.value;
+    twos.value = results.twos.value;
+    three.value = results.three.value;
+    fours.value = results.four.value;
+    fives.value = results.five.value;
+    sixes.value = results.six.value;
 
+    onePair.value = results.onePair.value;
+    twoPair.value = results.twoPair.value;
+    threeSame.value = results.threeSame.value;
+    fourSame.value = results.fourSame.value;
 
 }
 
