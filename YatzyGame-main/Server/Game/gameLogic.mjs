@@ -22,11 +22,15 @@ export let results = {ones: {value: 0, locked: false},          twos: {value: 0,
                       five: {value: 0, locked: false},          six: {value: 0, locked: false},
 
                       onePair: {value: 0, locked: false},       twoPair: {value: 0, locked: false}, 
-                      threePair: {value: 0, locked: false},     fourPair: {value: 0, locked: false}, 
-                      fivePair: {value: 0, locked: false},      sixPair: {value: 0, locked: false},
+                      threeSame: {value: 0, locked: false},     fourSame: {value: 0, locked: false}, 
 
-                      fullHouse: {value: 0, locked: false,      smallStraight: {value: 0, locked: false}, 
-                      largeStraight: {value: 0, locked: false}, chance: {value: 0, locked: false}, yatzy: {value: 0, locked: false}}};
+                      fullHouse: {value: 0, locked: false},      smallStraight: {value: 0, locked: false}, 
+                      largeStraight: {value: 0, locked: false},  chance: {value: 0, locked: false}, 
+                      yatzy: {value: 0, locked: false},          sumField: {value: 0},
+                      bonusField: {value: 0},                    total: {value: 0},     
+
+                      };
+
 
 
 export function throwD()  { // export betyder at serveren (server.mjs) kan bruge metoden
@@ -65,12 +69,12 @@ function updateScores() {
             results.twoPair.value = twoPairPoints();
         }
 
-    if (results.threePair.locked == false) {
-            results.threePair.value = threeSamePoints();
+    if (results.threeSame.locked == false) {
+            results.threeSame.value = threeSamePoints();
         }
 
-    if (results.fourPair.locked == false) {
-            results.fourPair.value = fourSamePoints();
+    if (results.fourSame.locked == false) {
+            results.fourSame.value = fourSamePoints();
         }
 
     fullHousePoints();
@@ -170,17 +174,7 @@ function threeSamePoints() {
     return 0;
 }
 
-function threeSamePoints() {
-    let frequency = getFrequency();
-    for (let value = 6; value >= 1; value--) {
-        if (frequency[value] >= 3) {
-            let points = value * 3;
-            return points;
-        }
-    }
 
-    return 0;
-}
 
 function fourSamePoints() {
     let frequency = getFrequency();
@@ -212,12 +206,12 @@ function fullHousePoints() {
 
     if (three && two) {
         if (results.fullHouse.locked == false) {
-            fullHouse.value = 25;
+            results.fullHouse.value = 25;
         }
         return 25;
     }
     if (results.fullHouse.locked == false) { // else if istedet??
-        fullHouse.value = 0;
+        results.fullHouse.value = 0;
     }
     return 0;
 }
@@ -227,12 +221,12 @@ function smallStraightPoints() {
     if (frequency[1] >= 1 && frequency[2] >= 1 && frequency[3] >= 1 && 
         frequency[4] >= 1 && frequency[5] >= 1) {
         if (results.smallStraight.locked == false) {
-            smallStraight.value = 15;
+            results.smallStraight.value = 15;
         }
         return 15;
     }
     if (results.smallStraight.locked == false) {
-        smallStraight.value = 0;
+        results.smallStraight.value = 0;
     }
     return 0;
 }
@@ -242,23 +236,24 @@ function largeStraightPoints() {
     if (frequency[2] >= 1 && frequency[3] >= 1 && frequency[4] >= 1 && 
         frequency[5] >= 1 && frequency[6] >= 1) {
         if (results.largeStraight.locked == false) {
-            largeStraight.value = 20;
+            results.largeStraight.value = 20;
         }
         return 20;
     }
     if (results.largeStraight.locked == false) {
-        largeStraight.value = 0;
+        results.largeStraight.value = 0;
     }
     return 0;
 }
 
 function chancePoints() {
     let sum = 0;
-    fields.forEach(field => {
-        sum += parseInt(field.dataset.value) || 0;
-    });
+    diceValues.forEach(d => {
+        sum += d;
+    })
+
     if (results.chance.locked == false) {
-        chance.value = sum;
+        results.chance.value = sum;
     }
     return sum;
 }
@@ -268,13 +263,13 @@ function yatzyPoints() {
     for (let value = 1; value <= 6; value++) {
         if (frequency[value] === 5) {
             if (results.yatzy.locked == false) {
-                yatzy.value = 50;
+                results.yatzy.value = 50;
             }
             return 50;
         }
     }
     if (results.yatzy.locked == false) {
-        yatzy.value = 0;
+        results.yatzy.value = 0;
     }
     return 0;
 }
