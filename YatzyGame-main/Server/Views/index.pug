@@ -1,0 +1,62 @@
+doctype html
+html
+  head
+    title Yatzy - Tilmelding
+    script.
+      let lastPlayerCount = 0;
+
+      setInterval(async () => {
+        try {
+          const res = await fetch('/status');
+          const data = await res.json();
+
+          if (data.gameStarted) {
+            window.location.href = "/game";
+            return;
+          }
+
+          const ul = document.getElementById('playerList');
+          if (ul) {
+            ul.innerHTML = '';
+            data.players.forEach(player => {
+              const li = document.createElement('li');
+              li.textContent = player;
+              ul.appendChild(li);
+            });
+          }
+
+          if (lastPlayerCount < 2 && data.players.length >= 2) {
+            location.reload();
+          }
+
+          lastPlayerCount = data.players.length;
+
+        } catch (err) {
+          console.error("Kunne ikke hente status:", err);
+        }
+      }, 2000);
+  body
+    h1 Tilmeld dig Yatzy
+
+    if error
+      p(style="color: red") #{error}
+
+    if waiting
+      p(style="color: blue") Du har trykket start. Vent på de andre...
+
+    if !playerName
+      form(method="POST", action="/join")
+        label(for="name") Navn:
+        input(type="text", name="name", required)
+        button(type="submit") Tilmeld
+    else 
+      p Du er tilmeldt som #{playerName}
+
+    if (canStart && playerName && !waiting)
+      form(method="POST", action="/start")
+        button(type="submit") Start spillet
+
+    h2 Tilmeldte spillere:
+    ul(id="playerList")
+      each player in players
+        li= player

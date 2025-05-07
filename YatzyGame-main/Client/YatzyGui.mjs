@@ -25,6 +25,29 @@ const bonusField = document.getElementById('bonus');
 const total = document.getElementById('total');
 
 
+const twos = document.getElementById('twos')
+const three = document.getElementById('threes')
+const fours = document.getElementById('fours');
+const fives = document.getElementById('fives');
+const sixes = document.getElementById('sixes');
+
+const onePair = document.getElementById('one-pair');
+const twoPair = document.getElementById('two-pair');
+const threeSame = document.getElementById('three-same');
+const fourSame = document.getElementById('four-same');
+
+const fullHouse = document.getElementById('full-house');
+const smallStraight = document.getElementById('small-straight');
+const largeStraight = document.getElementById('large-straight');
+
+const chance = document.getElementById('chance');
+const yatzy = document.getElementById('yatzy');
+
+const sumField = document.getElementById('sum');
+const bonusField = document.getElementById('bonus');
+const total = document.getElementById('total');
+
+
 
 let path = 'http://localhost:8000'
 

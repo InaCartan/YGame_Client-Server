@@ -85,6 +85,7 @@ function updateScores() {
     //bonusField = sumPoints >= 63 ? 50 : 0;
     
     //let totalPoints = parseInt(bonusField) || 0;
+    //let totalPoints = parseInt(bonusField) || 0;
     
     // for(const field of Object.values(results)){ 
     //     if (field.lockedx) {
@@ -92,6 +93,7 @@ function updateScores() {
     //     }
     // };
     
+    // total = totalPoints;
     // total = totalPoints;
 }
 
@@ -151,6 +153,19 @@ function twoPairPoints() {
         let points = pairs[0] + pairs[1];
         return points;
     }
+
+    return 0;
+}
+
+function threeSamePoints() {
+    let frequency = getFrequency();
+    for (let value = 6; value >= 1; value--) {
+        if (frequency[value] >= 3) {
+            let points = value * 3;
+            return points;
+        }
+    }
+
 
     return 0;
 }
@@ -326,3 +341,4 @@ function yatzyPoints() {
 // });
 
 // scoreFields.forEach(field => field.addEventListener('click', () => selectScore(field)));
+
