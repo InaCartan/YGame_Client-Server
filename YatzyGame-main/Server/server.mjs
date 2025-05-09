@@ -2,15 +2,19 @@
 
 // opgave14.1.js
 import express from 'express';
-import { getResults, results, throwD } from './Game/gameLogic.mjs';
+import json from 'express';
+import { getResults, results, selectScore, throwD } from './Game/gameLogic.mjs';
 import { diceValues } from './Game/gameLogic.mjs';
 import cors from 'cors';
 import session from 'express-session';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
+app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./Client'));
@@ -106,14 +110,16 @@ app.get('/status', (req, res) => {
     });
   });
 
-app.post('/throwD', (req, res) => { // ændre data (og dice values)
+
+
+app.post('/throwD', (req, res) => { // ændre data (dice values), derfor 'post'
     throwD()
     console.log(diceValues);
     res.status(201);
     res.send(diceValues)
 });
 
-app.get('/diceValues', (req, res) => { // henter data (dice values) og sender til client
+app.get('/diceValues', (req, res) => { // henter data (dice values) og sender til client, derfor 'get'
     console.log(diceValues);
     res.send(diceValues)
 });
@@ -121,6 +127,12 @@ app.get('/diceValues', (req, res) => { // henter data (dice values) og sender ti
 app.get('/getResults', (req, res) => {
     console.log(results);
     res.send(getResults());
+});
+
+app.post('/selectScore', (req, res) => {
+    let parametre = req.body;
+    selectScore(parametre.id);
+    res.sendStatus(201);
 });
 
 app.listen(8000);

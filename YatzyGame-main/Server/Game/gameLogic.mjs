@@ -8,32 +8,36 @@ let gameEnded = false;
 
 const diceImages = [
     "images/dice-six-faces-one.svg",
-    "images/dice-six-faces-two.svg", 
+    "images/dice-six-faces-two.svg",
     "images/dice-six-faces-three.svg",
     "images/dice-six-faces-four.svg",
     "images/dice-six-faces-five.svg",
     "images/dice-six-faces-six.svg"
 ];
 
-export let diceValues = [1,1,1,1,1]; // represent "const fields"
+export let diceValues = [1, 1, 1, 1, 1]; // represent "const fields"
 
-export let results = {ones: {value: 0, locked: false},          twos: {value: 0, locked: false}, 
-                      three: {value: 0, locked: false},         four: {value: 0, locked: false}, 
-                      five: {value: 0, locked: false},          six: {value: 0, locked: false},
+export let results = {
+    one: { value: 0, locked: false, beregner: () => getFrequency()[1] * 1 },   two: { value: 0, locked: false, beregner: () => getFrequency()[2] * 2 },
+    three: { value: 0, locked: false, beregner: () => getFrequency()[3] * 3 }, four: { value: 0, locked: false, beregner: () => getFrequency()[4] * 4 },
+    five: { value: 0, locked: false, beregner: () => getFrequency()[5] * 5 },  six: { value: 0, locked: false, beregner: () => getFrequency()[6] * 6 },
 
-                      onePair: {value: 0, locked: false},       twoPair: {value: 0, locked: false}, 
-                      threeSame: {value: 0, locked: false},     fourSame: {value: 0, locked: false}, 
+    onePair: { value: 0, locked: false, beregner: onePairPoints },     twoPair: { value: 0, locked: false, beregner: twoPairPoints },
+    threeSame: { value: 0, locked: false, beregner: threeSamePoints }, fourSame: { value: 0, locked: false, beregner: fourSamePoints },
 
-                      fullHouse: {value: 0, locked: false},      smallStraight: {value: 0, locked: false}, 
-                      largeStraight: {value: 0, locked: false},  chance: {value: 0, locked: false}, 
-                      yatzy: {value: 0, locked: false},          sumField: {value: 0},
-                      bonusField: {value: 0},                    total: {value: 0},     
+    fullHouse: { value: 0, locked: false, beregner: fullHousePoints },         smallStraight: { value: 0, locked: false, beregner: smallStraightPoints },
+    largeStraight: { value: 0, locked: false, beregner: largeStraightPoints }, chance: { value: 0, locked: false, beregner: chancePoints },
+    yatzy: { value: 0, locked: false, beregner: yatzyPoints },
 
-                      };
+    sumField: { value: 0 },
+    bonusField: { value: 0 },
+    total: { value: 0 },
+
+};
 
 
 
-export function throwD()  { // export betyder at serveren (server.mjs) kan bruge metoden
+export function throwD() { // export betyder at serveren (server.mjs) kan bruge metoden
     if (mustSelectScore || gameEnded) {
         return;
     }
@@ -58,47 +62,19 @@ export function throwD()  { // export betyder at serveren (server.mjs) kan bruge
     }
 }
 
+
 function updateScores() {
-    updateNumberScores();
-    
-    if (results.onePair.locked == false) {
-        results.onePair.value = onePairPoints();
-        }
+    //updateNumberScores();
 
-    if (results.twoPair.locked == false) {
-            results.twoPair.value = twoPairPoints();
+    Object.keys(results).forEach(keys => {
+        if (results[keys].locked == false) {
+            results[keys].value = results[keys].beregner();
         }
+    })
 
-    if (results.threeSame.locked == false) {
-            results.threeSame.value = threeSamePoints();
-        }
+    total_Sum_Bonus();
 
-    if (results.fourSame.locked == false) {
-            results.fourSame.value = fourSamePoints();
-        }
 
-    fullHousePoints();
-    smallStraightPoints();
-    largeStraightPoints();
-    chancePoints();
-    yatzyPoints();
-    
-    //let sumPoints = 0;
- 
-    //sumField = sumPoints;
-    //bonusField = sumPoints >= 63 ? 50 : 0;
-    
-    //let totalPoints = parseInt(bonusField) || 0;
-    //let totalPoints = parseInt(bonusField) || 0;
-    
-    // for(const field of Object.values(results)){ 
-    //     if (field.lockedx) {
-    //         totalPoints += field;
-    //     }
-    // };
-    
-    // total = totalPoints;
-    // total = totalPoints;
 }
 
 // function updateTurnLabel() {
@@ -117,18 +93,18 @@ function getFrequency() {
 }
 
 
-function updateNumberScores() {
-    let frequency = getFrequency();
-    results.ones.value = frequency[1] * 1;
-    results.twos.value = frequency[2] * 2;
-    results.three.value = frequency[3] * 3;
-    results.four.value = frequency[4] * 4;
-    results.five.value = frequency[5] * 5;
-    results.six.value = frequency[6] * 6;
-    
-}
+// function updateNumberScores() {
+//     let frequency = getFrequency();
+//     results.one.value = getFrequency()[1] * 1;
+//     results.two.value = getFrequency()[2] * 2;
+//     results.three.value = getFrequency()[3] * 3;
+//     results.four.value = getFrequency()[4] * 4;
+//     results.five.value = getFrequency()[5] * 5;
+//     results.six.value = getFrequency()[6] * 6;
 
-export function getResults(){
+// }
+
+export function getResults() {
     return results;
 }
 
@@ -137,11 +113,11 @@ function onePairPoints() {
     for (let value = 6; value >= 1; value--) {
         if (frequency[value] >= 2) {
             let points = value * 2;
-            
+
             return points;
         }
     }
-   
+
     return 0;
 }
 
@@ -181,7 +157,7 @@ function fourSamePoints() {
     for (let value = 6; value >= 1; value--) {
         if (frequency[value] >= 4) {
             let points = value * 4;
-          
+
             return points;
         }
     }
@@ -202,7 +178,7 @@ function fullHousePoints() {
             two = true;
         }
     }
-    
+
 
     if (three && two) {
         if (results.fullHouse.locked == false) {
@@ -210,7 +186,7 @@ function fullHousePoints() {
         }
         return 25;
     }
-    if (results.fullHouse.locked == false) { // else if istedet??
+    if (results.fullHouse.locked == false) {
         results.fullHouse.value = 0;
     }
     return 0;
@@ -218,7 +194,7 @@ function fullHousePoints() {
 
 function smallStraightPoints() {
     let frequency = getFrequency();
-    if (frequency[1] >= 1 && frequency[2] >= 1 && frequency[3] >= 1 && 
+    if (frequency[1] >= 1 && frequency[2] >= 1 && frequency[3] >= 1 &&
         frequency[4] >= 1 && frequency[5] >= 1) {
         if (results.smallStraight.locked == false) {
             results.smallStraight.value = 15;
@@ -233,7 +209,7 @@ function smallStraightPoints() {
 
 function largeStraightPoints() {
     let frequency = getFrequency();
-    if (frequency[2] >= 1 && frequency[3] >= 1 && frequency[4] >= 1 && 
+    if (frequency[2] >= 1 && frequency[3] >= 1 && frequency[4] >= 1 &&
         frequency[5] >= 1 && frequency[6] >= 1) {
         if (results.largeStraight.locked == false) {
             results.largeStraight.value = 20;
@@ -274,51 +250,81 @@ function yatzyPoints() {
     return 0;
 }
 
-// function selectScore(field) {
-//     if (turnNumber === 0 || gameEnded) {
-//         return;
-//     }
-//     if (field.hasAttribute('locked')) {
-//         return;
-//     }
-    
-//     field.setAttribute('locked', 'true');
-//     field.style.backgroundColor = '#d3d3d3';
-//     field.style.fontWeight = 'bold';
-//     field.style.cursor = 'not-allowed';
-    
-//     mustSelectScore = false;
-//     rollButton.disabled = false;
-//     resetForNextTurn();
-// }
+function total_Sum_Bonus() {
+    let sumPoints = 0;
+    const fields = ["one", "two", "three", "four", "five", "six"];
+
+    for (let f of fields) {
+        let res = results[f];
+        if (res.locked == false) {
+            sumPoints += res.value;
+        }
+    }
+
+    results.sumField.value = sumPoints;
+    results.bonusField.value = sumPoints > 63 ? 50 : 0;
+
+
+    let totalPoints = results.bonusField.value;
+    for (let f of fields) {
+        let res = results[f];
+        if (res.locked == false) {
+            totalPoints += res.value;
+        }
+    }
+
+    results.total.value = totalPoints;
+}
+
+
+export function selectScore(field) {
+    if (turnNumber === 0 || gameEnded) {
+        return;
+    }
+    if (results[field].locked == true) {
+        return;
+    }
+
+    results[field].locked = true;
+
+    // field.setAttribute('locked', 'true');
+    // field.style.backgroundColor = '#d3d3d3';
+    // field.style.fontWeight = 'bold';
+    // field.style.cursor = 'not-allowed';
+    //rollButton.disabled = false;
+    mustSelectScore = false;
+    resetForNextTurn();
+}
 
 // function isGameOver() {
 //     return scoreFields.every(field => field.hasAttribute('locked'));
 // }
 
-// function resetForNextTurn() {
-//     turnNumber = 0;
-//     totalTurns++;
-//     holdStatus.fill(false);
-//     fields.forEach(field => {
-//         field.style.backgroundColor = 'white';
-//         field.value = '';
-//     });
-//     rollButton.disabled = false;
-//     updateTurnLabel();
-//     updateScores();
+function resetForNextTurn() {
+    turnNumber = 0;
+    totalTurns++;
+    holdStatus.fill(false);
+    // fields.forEach(field => {
+    //     field.style.backgroundColor = 'white';
+    //     field.value = '';
+    // });
+    diceValues.fill(1);
 
-//     if (isGameOver()) {
-//         endGame();
-//     }
-// }
+    //rollButton.disabled = false;
+    //turnLabel.textContent = `Turn: ${turnNumber}`;
+    updateScores();
 
-// function endGame() {
-//     gameEnded = true;
-//     rollButton.disabled = true;
-//     turnLabel.textContent = 'Game Over!';
-//     displayFinalScore();
-// }
+    // if (isGameOver()) {
+    //     endGame();
+    // }
+}
+
+function endGame() {
+    gameEnded = true;
+    // rollButton.disabled = true;
+    // turnLabel.textContent = 'Game Over!';
+    //displayFinalScore();
+}
 
 // function displayFinalScore() {
 //     const finalScore = total.value;
