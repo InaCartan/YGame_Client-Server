@@ -17,7 +17,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('./Client'));
+app.use(express.static(path.join(__dirname, '../Client')));
 
 app.use(session({
   secret: 'hemmeligKode123',
@@ -44,7 +44,7 @@ app.get('/', (req, res) => {
 
     res.render('index', {
         players,
-        canStart: players.length >= 2,
+        canStart: players.length >= 1,
         playerName: req.session.playerName,
         waiting: readyPlayers.has(req.session.playerName)
     });
@@ -55,7 +55,7 @@ app.post('/join', (req, res) => {
     if (!name || gameStarted) {
         return res.render('index', {
             players,
-            canStart: players.length >= 2,
+            canStart: players.length >= 1,
             error: 'Ugyldigt navn eller spillet er allerede startet.'
         });
     }
@@ -76,14 +76,14 @@ app.post('/start', (req, res) => {
 
     readyPlayers.add(name);
 
-    if (readyPlayers.size >= 2) {
+    if (readyPlayers.size >= 1) {
         gameStarted = true;
         return res.redirect('/game');
     }
 
     res.render('index', {
         players,
-        canStart: players.length >= 2,
+        canStart: players.length >= 1,
         playerName: name,
         waiting: true
     });
