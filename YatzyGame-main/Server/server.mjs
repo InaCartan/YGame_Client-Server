@@ -13,7 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('./Client'));
+app.use(express.static(path.join(__dirname, '../Client')));
 
 app.use(session({
   secret: 'hemmeligKode123',
