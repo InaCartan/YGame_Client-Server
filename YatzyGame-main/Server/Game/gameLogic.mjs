@@ -15,7 +15,7 @@ const diceImages = [
     "images/dice-six-faces-six.svg"
 ];
 
-export let diceValues = [1, 1, 1, 1, 1]; // represent "const fields"
+export let diceValues = [1, 1, 1, 1, 1]; 
 
 export let results = {
     one: { value: 0, locked: false, beregner: () => getFrequency()[1] * 1 },   two: { value: 0, locked: false, beregner: () => getFrequency()[2] * 2 },
@@ -35,51 +35,33 @@ export let results = {
 
 };
 
+export function updateHoldStatus(index, clientHoldStatus) {
+    holdStatus = [...clientHoldStatus]; 
+    updateScores(); 
+}
 
-
-export function throwD() { // export betyder at serveren (server.mjs) kan bruge metoden
-    if (mustSelectScore || gameEnded) {
+export function throwD() {
+    if (mustSelectScore || gameEnded || turnNumber >= maxRollsPerTurn) {
         return;
     }
-    if (turnNumber < maxRollsPerTurn) {
-        for (let i = 0; i < diceValues.length; i++) {
-            if (!holdStatus[i]) {
-                const value = Math.trunc(Math.random() * 6) + 1;
-                diceValues[i] = value;
-                // fields[i].style.backgroundImage = `url(${diceImages[value - 1]})`;
-                // fields[i].value = '';  
-                // fields[i].dataset.value = value;
-            }
-        }
-        updateScores();
-        turnNumber++;
-        // updateTurnLabel();
-
-        if (turnNumber === maxRollsPerTurn) {
-            mustSelectScore = true;
-            // rollButton.disabled = true;
+    
+    for (let i = 0; i < diceValues.length; i++) {
+        if (!holdStatus[i]) {
+            diceValues[i] = Math.floor(Math.random() * 6) + 1;
         }
     }
+    updateScores();
+    turnNumber++;
 }
-
 
 function updateScores() {
-    //updateNumberScores();
-
-    Object.keys(results).forEach(keys => {
-        if (results[keys].locked == false) {
-            results[keys].value = results[keys].beregner();
+    Object.keys(results).forEach(key => {
+        if (!results[key].locked) {
+            results[key].value = results[key].beregner ? results[key].beregner() : 0;
         }
-    })
-
+    });
     total_Sum_Bonus();
-
-
 }
-
-// function updateTurnLabel() {
-//     turnLabel.textContent = `Turn: ${turnNumber}`;
-// }
 
 function getFrequency() {
     let frequency = Array(7).fill(0);
@@ -91,18 +73,6 @@ function getFrequency() {
     }
     return frequency;
 }
-
-
-// function updateNumberScores() {
-//     let frequency = getFrequency();
-//     results.one.value = getFrequency()[1] * 1;
-//     results.two.value = getFrequency()[2] * 2;
-//     results.three.value = getFrequency()[3] * 3;
-//     results.four.value = getFrequency()[4] * 4;
-//     results.five.value = getFrequency()[5] * 5;
-//     results.six.value = getFrequency()[6] * 6;
-
-// }
 
 export function getResults() {
     return results;
@@ -150,8 +120,6 @@ function threeSamePoints() {
     return 0;
 }
 
-
-
 function fourSamePoints() {
     let frequency = getFrequency();
     for (let value = 6; value >= 1; value--) {
@@ -167,27 +135,20 @@ function fourSamePoints() {
 
 function fullHousePoints() {
     let frequency = getFrequency();
-    let three = false;
-    let two = false;
+    let three = 0;
+    let two = 0;
 
-    for (let value = 1; value <= 6; value++) {
+    
+    for (let value = 6; value >= 1; value--) {
         if (frequency[value] === 3) {
-            three = true;
-        }
-        if (frequency[value] === 2) {
-            two = true;
+            three = value;
+        } else if (frequency[value] === 2) {
+            two = value;
         }
     }
 
-
-    if (three && two) {
-        if (results.fullHouse.locked == false) {
-            results.fullHouse.value = 25;
-        }
+    if (three > 0 && two > 0) {
         return 25;
-    }
-    if (results.fullHouse.locked == false) {
-        results.fullHouse.value = 0;
     }
     return 0;
 }
@@ -256,26 +217,28 @@ function total_Sum_Bonus() {
 
     for (let f of fields) {
         let res = results[f];
-        if (res.locked == false) {
+        if (res.locked) {
             sumPoints += res.value;
         }
     }
-
     results.sumField.value = sumPoints;
-    results.bonusField.value = sumPoints > 63 ? 50 : 0;
+    
+    results.bonusField.value = sumPoints >= 63 ? 50 : 0;
 
-
-    let totalPoints = results.bonusField.value;
-    for (let f of fields) {
-        let res = results[f];
-        if (res.locked == false) {
-            totalPoints += res.value;
+    let totalPoints = 0;
+    
+    Object.entries(results).forEach(([key, value]) => {
+        if (value.locked && !['sumField', 'bonusField', 'total'].includes(key)) {
+            totalPoints += value.value;
         }
+    });
+    
+    if (results.bonusField.value > 0) {
+        totalPoints += results.bonusField.value;
     }
 
     results.total.value = totalPoints;
 }
-
 
 export function selectScore(field) {
     if (turnNumber === 0 || gameEnded) {
@@ -287,59 +250,20 @@ export function selectScore(field) {
 
     results[field].locked = true;
 
-    // field.setAttribute('locked', 'true');
-    // field.style.backgroundColor = '#d3d3d3';
-    // field.style.fontWeight = 'bold';
-    // field.style.cursor = 'not-allowed';
-    //rollButton.disabled = false;
     mustSelectScore = false;
     resetForNextTurn();
 }
-
-// function isGameOver() {
-//     return scoreFields.every(field => field.hasAttribute('locked'));
-// }
 
 function resetForNextTurn() {
     turnNumber = 0;
     totalTurns++;
     holdStatus.fill(false);
-    // fields.forEach(field => {
-    //     field.style.backgroundColor = 'white';
-    //     field.value = '';
-    // });
     diceValues.fill(1);
 
-    //rollButton.disabled = false;
-    //turnLabel.textContent = `Turn: ${turnNumber}`;
     updateScores();
-
-    // if (isGameOver()) {
-    //     endGame();
-    // }
 }
 
 function endGame() {
     gameEnded = true;
-    // rollButton.disabled = true;
-    // turnLabel.textContent = 'Game Over!';
-    //displayFinalScore();
 }
-
-// function displayFinalScore() {
-//     const finalScore = total.value;
-//     const bonus = bonusField.value;
-//     alert(`Game Over!\nFinal Score: ${finalScore}\n${bonus > 0 ? 'Bonus Achieved! (+50)' : 'No Bonus'}`);
-// }
-
-// fields.forEach((field, index) => {
-//     field.addEventListener('click', () => {
-//         if (!gameEnded && turnNumber > 0 && turnNumber <= maxRollsPerTurn) {
-//             holdStatus[index] = !holdStatus[index];
-//             field.style.backgroundColor = holdStatus[index] ? '#e0e0e0' : 'white';
-//         }
-//     });
-// });
-
-// scoreFields.forEach(field => field.addEventListener('click', () => selectScore(field)));
 
